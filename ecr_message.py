@@ -1,5 +1,6 @@
 import datetime
 
+
 class ECRMessage:
     def __init__(self):
         self.version = b"\x02"  # fixed with "02h"
@@ -7,15 +8,15 @@ class ECRMessage:
         self.trans_amount = b"0" * 12
         self.other_amount = b"0" * 12
         self.pan = b" " * 19
-        self.expiry_date = b"0" * 4
+        self.expiry_date = b" " * 4
         self.cancel_reason = b"00"
         self.invoice_number = b"0" * 6
-        self.auth_code = b" " * 6
+        self.auth_code = b"0" * 6
         self.installment_flag = b" "
         self.redeem_flag = b" "
         self.dcc_flag = b"N"
-        self.installment_plan = b" " * 3
-        self.installment_tenor = b" " * 2
+        self.installment_plan = b"0" * 3
+        self.installment_tenor = b"0" * 2
         self.generic_data = b" " * 12
         self.reff_number = b" " * 12
         self.original_date = b" " * 4
@@ -34,7 +35,7 @@ class ECRMessage:
 
         now = datetime.datetime.now()
         return now.strftime(format_str)
-    
+
     @staticmethod
     def _str_to_bytes(string, length, fillchar=b"0", side="left"):
         """
@@ -43,14 +44,14 @@ class ECRMessage:
         Args:
             string: 要转换的字符串。
             length: 目标字节数组的长度。
-            encoding: 编码方式，默认为 utf-8。
+            encoding: 编码方式，默认为 ascii。
             fillchar: 填充字符，默认为 '0'。
             side: 填充位置，'left' 表示左侧填充，'right' 表示右侧填充。
 
         Returns:
             固定长度的字节数组。
         """
-        encoding = "utf-8"
+        encoding = "ascii"
         byte_array = string.encode(encoding)
 
         if len(byte_array) >= length:
@@ -61,6 +62,7 @@ class ECRMessage:
                 return fill_bytes + byte_array
             else:
                 return byte_array + fill_bytes
+
     def set_version(self, value):
         self.version = value
 
@@ -68,10 +70,10 @@ class ECRMessage:
         self.trans_type = self._str_to_bytes(value, 2)
 
     def set_trans_amount(self, amount):
-        self.trans_amount = self._str_to_bytes(amount, 12)
+        self.trans_amount = self._str_to_bytes(amount + "00", 12)
 
     def set_other_amount(self, amount):
-        self.other_amount = self._str_to_bytes(amount, 12)
+        self.other_amount = self._str_to_bytes(amount + "00", 12)
 
     def set_pan(self, pan):
         self.pan = self._str_to_bytes(pan, 19, b" ", "right")
@@ -93,17 +95,17 @@ class ECRMessage:
     def set_installment_flag(self, flag):
         if flag not in ["Y", "N"]:
             raise ValueError("InstallmentFlag must be 'Y' or 'N'")
-        self.installment_flag = flag.encode('ascii')
+        self.installment_flag = flag.encode("ascii")
 
     def set_redeem_flag(self, flag):
         if flag not in ["Y", "N"]:
             raise ValueError("RedeemFlag must be 'Y' or 'N'")
-        self.redeem_flag = flag.encode('ascii')
+        self.redeem_flag = flag.encode("ascii")
 
     def set_dcc_flag(self, flag):
         if flag not in ["Y", "N"]:
             raise ValueError("DCCFlag must be 'Y' or 'N'")
-        self.dcc_flag = flag.encode('ascii')
+        self.dcc_flag = flag.encode("ascii")
 
     def set_installment_plan(self, plan):
         self.installment_plan = self._str_to_bytes(plan, 3, b" ")
@@ -147,14 +149,35 @@ class ECRMessage:
 
         if len(message) != 150:
             raise ValueError(f"Message length is {len(message)}, expected 150")
-
+        self.print()
         return message
 
     def build_hex(self):
         """构建并返回十六进制字符串"""
         message = self.build()
         return message.hex().upper()
-
+    
+    def print(self):
+        # 打印每个字段的实际值
+        print("\nField values in hex:")
+        print(f"Version: {self.version.hex()}")
+        print(f"TransType: {self.trans_type.hex()}")
+        print(f"TransAmount: {self.trans_amount.hex()}")
+        print(f"OtherAmount: {self.other_amount.hex()}")
+        print(f"PAN: {self.pan.hex()}")
+        print(f"ExpiryDate: {self.expiry_date.hex()}")
+        print(f"CancelReason: {self.cancel_reason.hex()}")
+        print(f"InvoiceNumber: {self.invoice_number.hex()}")
+        print(f"AuthCode: {self.auth_code.hex()}")
+        print(f"InstallmentFlag: {self.installment_flag.hex()}")
+        print(f"RedeemFlag: {self.redeem_flag.hex()}")
+        print(f"DCCFlag: {self.dcc_flag.hex()}")
+        print(f"InstallmentPlan: {self.installment_plan.hex()}")
+        print(f"InstallmentTenor: {self.installment_tenor.hex()}")
+        print(f"GenericData: {self.generic_data.hex()}")
+        print(f"ReffNumber: {self.reff_number.hex()}")
+        print(f"OriginalDate: {self.original_date.hex()}")
+        print(f"Filler: {self.filler.hex()}")
 
 
 def echoMsg():
@@ -166,19 +189,16 @@ def echoMsg():
 
 
 if __name__ == "__main__":
-    ecr = echoMsg()
-    # 获取字节消息
-    message_bytes = ecr.build()
-    print("Message bytes length:", len(message_bytes))
-    print("Raw bytes:", message_bytes)
+    ecr = echoMsg().build()
+    # # 获取字节消息
+    # message_bytes = ecr.build()
+    # print("Message bytes length:", len(message_bytes))
+    # print("Raw bytes:", message_bytes)
 
-    # 获取十六进制表示
-    message_hex = ecr.build_hex()
-    print("Hex representation:", message_hex)
+    # # 获取十六进制表示
+    # message_hex = ecr.build_hex()
+    # print("Hex representation:", message_hex)
+    # ecr.print()
 
-    # 打印每个字段的实际值
-    print("\nField values in hex:")
-    print(f"Version: {ecr.version.hex()}")
-    print(f"TransType: {ecr.trans_type.hex()}")
-    print(f"TransAmount: {ecr.trans_amount.hex()}")
+
     

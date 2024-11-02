@@ -15,6 +15,12 @@ def echoMsg():
     # ecr.set_dcc_flag("N")
     return ecr
 
+def saleDebitMsg():
+    ecr = ECRMessage()
+    ecr.set_version(b"\x03")
+    ecr.set_trans_type("01")
+    ecr.set_trans_amount("5725")
+    return ecr
 
 def parseResponse(data):
     # 解析字节数组
@@ -58,8 +64,9 @@ dev.set_configuration()
 
 # 发送命令
 endpoint_in = 0x81
-endpoint_out = 0x2
+endpoint_out = 0x2 # 0x1 for Fiuu
 cmd = echoMsg().build()
+# cmd = saleDebitMsg().build()
 
 dev.write(endpoint_out, wrap.wrap_message(cmd))
 

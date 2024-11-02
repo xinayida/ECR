@@ -1,12 +1,25 @@
-# Python code transmits a byte to Arduino /Microcontroller
 import serial
-import time
-SerialObj = serial.Serial('COM24') # COMxx  format on Windows
-                  # ttyUSBx format on Linux
-SerialObj.baudrate = 9600  # set Baud rate to 9600
-SerialObj.bytesize = 8   # Number of data bits = 8
-SerialObj.parity  ='N'   # No parity
-SerialObj.stopbits = 1   # Number of Stop bits = 1
-time.sleep(3)
-SerialObj.write(b'A')    #transmit 'A' (8bit) to micro/Arduino
-SerialObj.close()      # Close the port
+from ecr_message import ECRMessage
+import wrap
+
+def echoMsg():
+    ecr = ECRMessage()
+    ecr.set_version(b"\x03")
+    ecr.set_trans_type("17")  # echoMsg
+    # ecr.set_dcc_flag("N")
+    return ecr
+
+# 打开串口，替换为你的实际端口
+ser = serial.Serial('/dev/cu.EZVALOLYYD01', 9600)  # 9600是波特率，根据你的设备调整
+
+cmd = echoMsg().build()
+msg = wrap.wrap_message(cmd)
+# 发送数据
+ser.write(msg)
+
+# 读取数据
+data = ser.read(10)  # 读取10个字节
+print(data)
+
+# 关闭串口
+ser.close()
