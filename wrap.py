@@ -42,7 +42,7 @@ def wrap_message(data):
     # print("original: ", data)
     # 构造完整消息
     message = b"\x02" + message_content + bytes([lrc])
-    print("after framed: ", to_hex(message))
+    # print("after framed: ", to_hex(message))
 
     return message
 

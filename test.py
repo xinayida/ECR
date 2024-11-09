@@ -1,5 +1,6 @@
 from ecr_message import ECRMessage
 import wrap
+import serial
 
 
 def echoMsg():
@@ -40,9 +41,20 @@ def to_hex(byte_array):
     hex_string = " ".join([hex(b)[2:].zfill(2) for b in byte_array])
     return hex_string
 
+def test_fiuu():
+    ser = serial.Serial(port="/dev/tty.usbmodem11301", baudrate=11520, timeout=2)
+    hex_string = "02004336303030303030303030313030303030301C303000203030303030303030303030303030303030301C0357"
+    byte_array = bytes.fromhex(hex_string)
+    ser.write(byte_array)
+    print(ser.readline())
+
 if __name__ == "__main__":
+    message_length = 20
+    print(message_length.to_bytes(2, byteorder='big'))
+    # test_fiuu()
     # 示例
-    bcd = 150
+    # bcd = 150
+    # print(to_hex(b'02'))
     # bin_str = bcd_to_bin(bcd)
     # bytes_data = bin_to_bytes(bin_str)
     # print(bin_str, to_hex(bytes_data))

@@ -7,8 +7,8 @@ if __name__ == "__main__":
         find_library=libusb_package.find_library
     )
     # Find our device
-    # dev = usb.core.find(idVendor=0x1e0e, idProduct=0x902b, backend=libusb1_backend) #Fiuu
-    dev = usb.core.find(idVendor=0x0B00, idProduct=0x0055, backend=libusb1_backend)  #BCA
+    dev = usb.core.find(idVendor=0x1e0e, idProduct=0x902b, backend=libusb1_backend) #Fiuu
+    # dev = usb.core.find(idVendor=0x0B00, idProduct=0x0055, backend=libusb1_backend)  #BCA
 
     if dev is None:
         raise ValueError('Device not found')

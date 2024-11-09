@@ -178,6 +178,7 @@ class ECRMessage:
         print(f"ReffNumber: {self.reff_number.hex()}")
         print(f"OriginalDate: {self.original_date.hex()}")
         print(f"Filler: {self.filler.hex()}")
+        print("\n")
 
 
 def echoMsg():
